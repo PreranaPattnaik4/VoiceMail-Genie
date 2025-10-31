@@ -15,6 +15,7 @@ import {
   Languages,
   Loader2,
   Mic,
+  MicOff,
   PenSquare,
   Smile,
   WandSparkles,
@@ -95,7 +96,58 @@ export function VoiceMailGenieForm() {
 
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [goal, setGoal] = useState("");
   const [isFinished, setIsFinished] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    // @ts-ignore
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      
+      recognition.onresult = (event: any) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        setGoal(goal + finalTranscript + interimTranscript);
+      };
+      
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error", event.error);
+        toast({
+          variant: 'destructive',
+          title: 'Speech Recognition Error',
+          description: event.error,
+        });
+        setIsRecording(false);
+      };
+
+      recognition.onend = () => {
+        if(isRecording) { // If it stops unexpectedly, restart it.
+            recognition.start();
+        }
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Unsupported Browser',
+        description: 'Your browser does not support speech recognition.',
+      });
+    }
+  }, [toast, goal, isRecording]);
 
   useEffect(() => {
     if (state.message) {
@@ -123,10 +175,21 @@ export function VoiceMailGenieForm() {
     });
   };
 
+  const handleMicClick = () => {
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      setIsRecording(false);
+    } else {
+      recognitionRef.current?.start();
+      setIsRecording(true);
+    }
+  };
+
   const resetForm = () => {
     setIsFinished(false);
     setSubject("");
     setBody("");
+    setGoal("");
     formRef.current?.reset();
     formRef.current?.dispatchEvent(new Event('reset'));
   };
@@ -147,13 +210,21 @@ export function VoiceMailGenieForm() {
           {!isFinished ? (
             <div className="space-y-4">
               <div className="grid w-full gap-1.5">
-                <Label htmlFor="goal" className="font-headline text-lg">Your Goal</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="goal" className="font-headline text-lg">Your Goal</Label>
+                  <Button type="button" variant="ghost" size="icon" onClick={handleMicClick} className="h-8 w-8">
+                    {isRecording ? <MicOff className="h-5 w-5 text-red-500" /> : <Mic className="h-5 w-5 text-primary" />}
+                    <span className="sr-only">{isRecording ? 'Stop recording' : 'Start recording'}</span>
+                  </Button>
+                </div>
                 <Textarea
                   id="goal"
                   name="goal"
                   placeholder="e.g., Email the client in French to politely ask for the signed documents."
                   className="min-h-[100px] text-base"
                   required
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
                 />
                  {state.message && !state.success && (
                     <p className="text-sm font-medium text-destructive">{state.message}</p>
