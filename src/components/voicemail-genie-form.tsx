@@ -134,8 +134,12 @@ export function VoiceMailGenieForm() {
       };
 
       recognition.onend = () => {
-        if(isRecording) { // If it stops unexpectedly, restart it.
+        if(recognitionRef.current && isRecording) { // If it stops unexpectedly, restart it.
+          try {
             recognition.start();
+          } catch(e) {
+             // Already started
+          }
         }
       };
 
@@ -180,8 +184,11 @@ export function VoiceMailGenieForm() {
       recognitionRef.current?.stop();
       setIsRecording(false);
     } else {
-      recognitionRef.current?.start();
-      setIsRecording(true);
+      if (recognitionRef.current) {
+        setGoal("");
+        recognitionRef.current.start();
+        setIsRecording(true);
+      }
     }
   };
 
