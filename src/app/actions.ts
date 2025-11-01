@@ -53,8 +53,7 @@ export async function runVoiceMailGenieAgent(prevState: FormState, formData: For
     // This provides a more generic but safer error message to the client.
     let errorMessage = 'An error occurred while generating the email. Please try again later.';
     if (error instanceof Error) {
-        // In a real app, you might inspect the error to provide a more specific message
-        // For now, we'll keep it general.
+        errorMessage = error.message;
     }
     return {
       success: false,
