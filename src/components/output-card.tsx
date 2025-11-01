@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRef } from 'react';
@@ -148,7 +149,7 @@ export function OutputCard({ isLoading, error, generatedEmail, onRetry }: Output
 
 
   return (
-    <Card className="w-full shadow-lg">
+    <Card className="w-full shadow-lg flex flex-col">
         <CardHeader>
             <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -157,7 +158,7 @@ export function OutputCard({ isLoading, error, generatedEmail, onRetry }: Output
                 <CardTitle className="font-headline text-2xl">Generated Email</CardTitle>
             </div>
         </CardHeader>
-        <CardContent className="space-y-6 min-h-[350px]">
+        <CardContent className="space-y-6 min-h-[350px] flex-grow">
             {isLoading ? (
                 <div className="space-y-4 pt-4">
                   <div className="space-y-2">

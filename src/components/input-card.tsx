@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -93,7 +94,7 @@ export function InputCard({ goal, setGoal, onGenerate, onClear, isLoading }: Inp
   };
 
   return (
-    <Card className="w-full shadow-lg">
+    <Card className="w-full shadow-lg flex flex-col">
       <CardHeader>
         <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
@@ -102,8 +103,8 @@ export function InputCard({ goal, setGoal, onGenerate, onClear, isLoading }: Inp
             <CardTitle className="font-headline text-2xl">Your Goal</CardTitle>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid w-full gap-1.5">
+      <CardContent className="flex-grow flex flex-col">
+        <div className="grid w-full gap-1.5 flex-grow">
           <div className="flex justify-end">
             <Button type="button" variant="ghost" size="icon" onClick={handleMicClick} className="h-8 w-8">
               {isRecording ? <MicOff className="h-5 w-5 text-red-500" /> : <Mic className="h-5 w-5 text-primary" />}
@@ -114,7 +115,7 @@ export function InputCard({ goal, setGoal, onGenerate, onClear, isLoading }: Inp
             id="goal"
             name="goal"
             placeholder="e.g., Email the client in French to politely ask for the signed documents."
-            className="min-h-[150px] text-base"
+            className="min-h-[150px] text-base flex-grow"
             required
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
