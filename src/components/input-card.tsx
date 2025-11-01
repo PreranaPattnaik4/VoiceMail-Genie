@@ -93,22 +93,18 @@ export function InputCard({ goal, setGoal, onGenerate, onClear, isLoading }: Inp
   };
 
   return (
-    <Card className="w-full max-w-2xl shadow-2xl">
-      <CardHeader className="text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
-          <Mic className="h-8 w-8 text-primary" />
+    <Card className="w-full shadow-lg">
+      <CardHeader>
+        <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <Mic className="h-6 w-6 text-primary" />
+            </div>
+            <CardTitle className="font-headline text-2xl">Your Goal</CardTitle>
         </div>
-        <CardTitle className="font-headline text-3xl">VoiceMail Genie</CardTitle>
-        <CardDescription className="font-body text-base">
-          State your goal in any language. Your Gemini-powered agent handles the rest.
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid w-full gap-1.5">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="goal" className="font-headline text-lg">
-              Your Goal
-            </Label>
+          <div className="flex justify-end">
             <Button type="button" variant="ghost" size="icon" onClick={handleMicClick} className="h-8 w-8">
               {isRecording ? <MicOff className="h-5 w-5 text-red-500" /> : <Mic className="h-5 w-5 text-primary" />}
               <span className="sr-only">{isRecording ? 'Stop recording' : 'Start recording'}</span>
@@ -118,7 +114,7 @@ export function InputCard({ goal, setGoal, onGenerate, onClear, isLoading }: Inp
             id="goal"
             name="goal"
             placeholder="e.g., Email the client in French to politely ask for the signed documents."
-            className="min-h-[100px] text-base"
+            className="min-h-[150px] text-base"
             required
             value={goal}
             onChange={(e) => setGoal(e.target.value)}

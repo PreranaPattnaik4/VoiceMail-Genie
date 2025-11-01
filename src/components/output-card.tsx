@@ -31,6 +31,7 @@ import {
   Languages,
   WandSparkles,
   RefreshCw,
+  Mail,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { VoiceMailGenieOutput } from '@/ai/flows/voice-mail-genie.types';
@@ -74,55 +75,6 @@ export function OutputCard({ isLoading, error, generatedEmail, onRetry }: Output
   const { toast } = useToast();
   const emailContentRef = useRef<HTMLDivElement>(null);
 
-
-  if (isLoading) {
-    return (
-      <Card className="w-full max-w-2xl animate-in fade-in-50">
-        <CardHeader>
-          <Skeleton className="h-8 w-3/5" />
-          <Skeleton className="h-4 w-4/5" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-32 w-full" />
-          </div>
-        </CardContent>
-        <CardFooter>
-            <Skeleton className="h-10 w-full" />
-        </CardFooter>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="w-full max-w-2xl animate-in fade-in-50">
-        <CardContent className="pt-6">
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>
-                    {error || "An unknown error occurred. Please try again."}
-                </AlertDescription>
-            </Alert>
-            <Button onClick={onRetry} className="mt-4 w-full">
-                <RefreshCw className="mr-2 h-4 w-4" />
-                Retry
-            </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!generatedEmail) {
-    return null;
-  }
-  
   const handleCopyToClipboard = (text: string, type: 'Subject' | 'Body') => {
     navigator.clipboard.writeText(text);
     toast({
@@ -131,12 +83,14 @@ export function OutputCard({ isLoading, error, generatedEmail, onRetry }: Output
   };
 
   const handleShareWhatsApp = () => {
+    if (!generatedEmail) return;
     const text = `Subject: ${generatedEmail.subject}\n\nBody: ${generatedEmail.body}`;
     const encodedText = encodeURIComponent(text);
     window.open(`whatsapp://send?text=${encodedText}`);
   };
 
   const handleDownloadDocx = () => {
+    if (!generatedEmail) return;
     const doc = new Document({
         sections: [{
             properties: {},
@@ -194,65 +148,99 @@ export function OutputCard({ isLoading, error, generatedEmail, onRetry }: Output
 
 
   return (
-    <Card className="w-full max-w-2xl animate-in fade-in-50">
+    <Card className="w-full shadow-lg">
         <CardHeader>
-            <CardTitle className="font-headline text-2xl">Generated Email</CardTitle>
-            <CardDescription>
-                Here is the email generated based on your goal.
-            </CardDescription>
+            <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Mail className="h-6 w-6 text-primary" />
+                </div>
+                <CardTitle className="font-headline text-2xl">Generated Email</CardTitle>
+            </div>
         </CardHeader>
-        <CardContent className="space-y-6">
-            <div>
-              <Label className="font-headline text-lg">Agent's Plan</Label>
-              <ul className="mt-2 space-y-2">
-                  {generatedEmail.plan.map((step, index) => (
-                  <li key={index} className="flex items-center gap-3 text-sm">
-                      {getIconForStep(step)}
-                      <span className="text-muted-foreground">{step}</span>
-                  </li>
-                  ))}
-              </ul>
-            </div>
-
-            <div ref={emailContentRef} className="space-y-4 p-1">
-                <div className="grid w-full gap-1.5">
-                    <Label htmlFor="subject" className="font-headline text-lg">Subject</Label>
-                    <div className="relative">
-                        <Input
-                            id="subject"
-                            value={generatedEmail.subject}
-                            readOnly
-                            className="pr-10 text-base bg-muted/30"
-                        />
-                        <Button variant="ghost" size="icon" className="absolute top-1/2 -translate-y-1/2 right-1 h-8 w-8" onClick={() => handleCopyToClipboard(generatedEmail.subject, 'Subject')}>
-                            <Clipboard className="h-4 w-4" />
-                        </Button>
-                    </div>
+        <CardContent className="space-y-6 min-h-[350px]">
+            {isLoading ? (
+                <div className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                      <Skeleton className="h-4 w-1/4" />
+                      <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div className="space-y-2">
+                      <Skeleton className="h-4 w-1/4" />
+                      <Skeleton className="h-32 w-full" />
+                  </div>
                 </div>
-                <div className="grid w-full gap-1.5">
-                    <Label htmlFor="body" className="font-headline text-lg">Body</Label>
-                    <div className="relative">
-                        <Textarea
-                            id="body"
-                            value={generatedEmail.body}
-                            readOnly
-                            className="min-h-[200px] pr-10 text-base bg-muted/30"
-                        />
-                        <Button variant="ghost" size="icon" className="absolute top-2 right-1 h-8 w-8" onClick={() => handleCopyToClipboard(generatedEmail.body, 'Body')}>
-                            <Clipboard className="h-4 w-4" />
-                        </Button>
-                    </div>
+            ) : error ? (
+                <div className="pt-6">
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            {error || "An unknown error occurred. Please try again."}
+                        </AlertDescription>
+                    </Alert>
+                    <Button onClick={onRetry} className="mt-4 w-full">
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Retry
+                    </Button>
                 </div>
-            </div>
+            ) : generatedEmail ? (
+                <>
+                    <div>
+                      <Label className="font-headline text-lg">Agent's Plan</Label>
+                      <ul className="mt-2 space-y-2">
+                          {generatedEmail.plan.map((step, index) => (
+                          <li key={index} className="flex items-center gap-3 text-sm">
+                              {getIconForStep(step)}
+                              <span className="text-muted-foreground">{step}</span>
+                          </li>
+                          ))}
+                      </ul>
+                    </div>
+                    <div ref={emailContentRef} className="space-y-4 p-1">
+                        <div className="grid w-full gap-1.5">
+                            <Label htmlFor="subject" className="font-headline text-lg">Subject</Label>
+                            <div className="relative">
+                                <Input
+                                    id="subject"
+                                    value={generatedEmail.subject}
+                                    readOnly
+                                    className="pr-10 text-base bg-muted/30"
+                                />
+                                <Button variant="ghost" size="icon" className="absolute top-1/2 -translate-y-1/2 right-1 h-8 w-8" onClick={() => handleCopyToClipboard(generatedEmail.subject, 'Subject')}>
+                                    <Clipboard className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="grid w-full gap-1.5">
+                            <Label htmlFor="body" className="font-headline text-lg">Body</Label>
+                            <div className="relative">
+                                <Textarea
+                                    id="body"
+                                    value={generatedEmail.body}
+                                    readOnly
+                                    className="min-h-[200px] pr-10 text-base bg-muted/30"
+                                />
+                                <Button variant="ghost" size="icon" className="absolute top-2 right-1 h-8 w-8" onClick={() => handleCopyToClipboard(generatedEmail.body, 'Body')}>
+                                    <Clipboard className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <div className="flex flex-col items-center justify-center h-full pt-10">
+                    <p className="text-muted-foreground">Your generated email will appear here.</p>
+                </div>
+            )}
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-2 justify-end">
-            <Button variant="outline" onClick={handleShareWhatsApp}>
+            <Button variant="outline" onClick={handleShareWhatsApp} disabled={!generatedEmail}>
                 <WhatsAppIcon />
                 <span className="ml-2">Share</span>
             </Button>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button>
+                    <Button disabled={!generatedEmail}>
                         <Download className="mr-2 h-4 w-4" />
                         Download
                     </Button>

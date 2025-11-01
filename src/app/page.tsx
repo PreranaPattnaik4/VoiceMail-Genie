@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useActionState } from 'react';
+import { useState } from 'react';
 import { runVoiceMailGenieAgent, type FormState } from '@/app/actions';
 import { InputCard } from '@/components/input-card';
 import { OutputCard } from '@/components/output-card';
@@ -45,23 +45,27 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen w-full flex-col items-center justify-start bg-background p-4 pt-10 gap-8">
-      <InputCard 
-        goal={inputGoal}
-        setGoal={setInputGoal}
-        onGenerate={handleGenerate}
-        onClear={handleClear}
-        isLoading={isLoading}
-      />
-      
-      {(isLoading || generatedEmail || error) && (
+    <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 pt-10 gap-8">
+      <div className="w-full max-w-7xl mx-auto">
+        <h1 className="font-headline text-4xl font-bold text-center mb-2">VoiceMail Genie</h1>
+        <p className="text-muted-foreground text-center mb-8">State your goal in any language. Your Gemini-powered agent handles the rest.</p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-7xl mx-auto items-start">
+        <InputCard 
+          goal={inputGoal}
+          setGoal={setInputGoal}
+          onGenerate={handleGenerate}
+          onClear={handleClear}
+          isLoading={isLoading}
+        />
+        
         <OutputCard
             isLoading={isLoading}
             error={error}
             generatedEmail={generatedEmail}
             onRetry={handleGenerate}
         />
-      )}
+      </div>
     </main>
   );
 }
