@@ -4,7 +4,11 @@ import { runVoiceMailGenie } from '@/ai/flows/voice-mail-genie';
 import { type VoiceMailGenieOutput } from '@/ai/flows/voice-mail-genie.types';
 import { z } from 'zod';
 
-const GoalSchema = z.string().min(10, { message: "Please describe your goal in at least 10 characters." });
+const GoalSchema = z.object({
+  goal: z.string().min(10, { message: "Please describe your goal in at least 10 characters." }),
+  language: z.string().optional(),
+});
+
 
 export interface FormState {
   success: boolean;
@@ -14,19 +18,31 @@ export interface FormState {
 
 export async function runVoiceMailGenieAgent(prevState: FormState, formData: FormData): Promise<FormState> {
   const userGoal = formData.get('goal');
+  const language = formData.get('language');
   
-  const validatedGoal = GoalSchema.safeParse(userGoal);
+  const validatedFields = GoalSchema.safeParse({
+    goal: userGoal,
+    language: language,
+  });
 
-  if (!validatedGoal.success) {
+  if (!validatedFields.success) {
     return {
       success: false,
       data: null,
-      message: validatedGoal.error.errors.map((e) => e.message).join(', '),
+      message: validatedFields.error.errors.map((e) => e.message).join(', '),
     };
   }
 
+  const { goal, language: selectedLanguage } = validatedFields.data;
+
+  let fullGoal = goal;
+  if (selectedLanguage && selectedLanguage !== 'auto') {
+    fullGoal += ` (in ${selectedLanguage})`;
+  }
+
+
   try {
-    const result = await runVoiceMailGenie(validatedGoal.data);
+    const result = await runVoiceMailGenie(fullGoal);
     return {
       success: true,
       data: result,

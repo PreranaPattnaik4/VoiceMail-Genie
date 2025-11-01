@@ -3,21 +3,30 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Mic, MicOff, Trash2, WandSparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface InputCardProps {
   goal: string;
   setGoal: (goal: string) => void;
+  language: string;
+  setLanguage: (language: string) => void;
   onGenerate: () => void;
   onClear: () => void;
   isLoading: boolean;
 }
 
-export function InputCard({ goal, setGoal, onGenerate, onClear, isLoading }: InputCardProps) {
+export function InputCard({ goal, setGoal, language, setLanguage, onGenerate, onClear, isLoading }: InputCardProps) {
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
@@ -104,18 +113,32 @@ export function InputCard({ goal, setGoal, onGenerate, onClear, isLoading }: Inp
         </div>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col">
-        <div className="grid w-full gap-1.5 flex-grow">
-          <div className="flex justify-end">
+        <div className="grid w-full gap-4 flex-grow">
+          <div className="flex justify-between items-center">
+            <Label htmlFor="language">Language</Label>
             <Button type="button" variant="ghost" size="icon" onClick={handleMicClick} className="h-8 w-8">
               {isRecording ? <MicOff className="h-5 w-5 text-red-500" /> : <Mic className="h-5 w-5 text-primary" />}
               <span className="sr-only">{isRecording ? 'Stop recording' : 'Start recording'}</span>
             </Button>
           </div>
+          <Select value={language} onValueChange={setLanguage} disabled={isLoading}>
+            <SelectTrigger id="language" className="w-full">
+              <SelectValue placeholder="Auto-detect" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">Auto-detect</SelectItem>
+              <SelectItem value="English">English</SelectItem>
+              <SelectItem value="Spanish">Spanish</SelectItem>
+              <SelectItem value="French">French</SelectItem>
+              <SelectItem value="German">German</SelectItem>
+              <SelectItem value="Japanese">Japanese</SelectItem>
+            </SelectContent>
+          </Select>
           <Textarea
             id="goal"
             name="goal"
             placeholder="e.g., Email the client in French to politely ask for the signed documents."
-            className="min-h-[150px] text-base flex-grow"
+            className="min-h-[250px] text-base flex-grow"
             required
             value={goal}
             onChange={(e) => setGoal(e.target.value)}

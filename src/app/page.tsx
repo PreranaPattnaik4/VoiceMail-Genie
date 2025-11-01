@@ -14,12 +14,14 @@ const initialState: FormState = {
 
 export default function Home() {
   const [inputGoal, setInputGoal] = useState<string>('');
+  const [language, setLanguage] = useState<string>('auto');
   const [generatedEmail, setGeneratedEmail] = useState<VoiceMailGenieOutput | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleClear = () => {
     setInputGoal('');
+    setLanguage('auto');
     setGeneratedEmail(null);
     setIsLoading(false);
     setError(null);
@@ -32,6 +34,7 @@ export default function Home() {
     
     const formData = new FormData();
     formData.append('goal', inputGoal);
+    formData.append('language', language);
     
     const result = await runVoiceMailGenieAgent(initialState, formData);
     
@@ -54,6 +57,8 @@ export default function Home() {
         <InputCard 
           goal={inputGoal}
           setGoal={setInputGoal}
+          language={language}
+          setLanguage={setLanguage}
           onGenerate={handleGenerate}
           onClear={handleClear}
           isLoading={isLoading}
