@@ -53,22 +53,22 @@ export default function Home() {
         <h1 className="font-headline text-4xl font-bold text-center mb-2">VoiceMail Genie</h1>
         <p className="text-muted-foreground text-center mb-8">State your goal in any language. Your Gemini-powered agent handles the rest.</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-7xl mx-auto items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-7xl mx-auto">
         <InputCard 
           goal={inputGoal}
           setGoal={setInputGoal}
           language={language}
           setLanguage={setLanguage}
           onGenerate={handleGenerate}
-          onClear={handleClear}
           isLoading={isLoading}
+          error={error}
         />
         
         <OutputCard
             isLoading={isLoading}
             error={error}
             generatedEmail={generatedEmail}
-            onRetry={handleGenerate}
+            onClear={handleClear}
         />
       </div>
     </div>

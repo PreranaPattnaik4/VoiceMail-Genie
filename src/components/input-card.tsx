@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Mic, MicOff, Trash2, WandSparkles } from 'lucide-react';
+import { Loader2, Mic, MicOff, RefreshCw, WandSparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Select,
@@ -15,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 interface InputCardProps {
   goal: string;
@@ -22,11 +24,11 @@ interface InputCardProps {
   language: string;
   setLanguage: (language: string) => void;
   onGenerate: () => void;
-  onClear: () => void;
   isLoading: boolean;
+  error: string | null;
 }
 
-export function InputCard({ goal, setGoal, language, setLanguage, onGenerate, onClear, isLoading }: InputCardProps) {
+export function InputCard({ goal, setGoal, language, setLanguage, onGenerate, isLoading, error }: InputCardProps) {
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
@@ -144,6 +146,17 @@ export function InputCard({ goal, setGoal, language, setLanguage, onGenerate, on
             onChange={(e) => setGoal(e.target.value)}
             disabled={isLoading}
           />
+           {error && !isLoading && (
+              <div className="pt-2">
+                  <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Error</AlertTitle>
+                      <AlertDescription>
+                          {error || "An unknown error occurred. Please try again."}
+                      </AlertDescription>
+                  </Alert>
+              </div>
+            )}
         </div>
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row gap-2">
@@ -160,10 +173,12 @@ export function InputCard({ goal, setGoal, language, setLanguage, onGenerate, on
             </>
           )}
         </Button>
-        <Button onClick={onClear} variant="ghost" className="w-full sm:w-auto" disabled={isLoading}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Clear
-        </Button>
+        {error && !isLoading && (
+            <Button onClick={onGenerate} variant="secondary" className="w-full sm:w-auto">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Retry
+            </Button>
+        )}
       </CardFooter>
     </Card>
   );

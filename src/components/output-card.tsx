@@ -15,7 +15,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +22,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  AlertCircle,
   Clipboard,
   Download,
   CheckCircle,
@@ -31,8 +29,8 @@ import {
   Smile,
   Languages,
   WandSparkles,
-  RefreshCw,
   Mail,
+  Trash2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { VoiceMailGenieOutput } from '@/ai/flows/voice-mail-genie.types';
@@ -52,7 +50,7 @@ interface OutputCardProps {
   isLoading: boolean;
   error: string | null;
   generatedEmail: VoiceMailGenieOutput | null;
-  onRetry: () => void;
+  onClear: () => void;
 }
 
 const planIcons: { [key: string]: React.ReactNode } = {
@@ -72,7 +70,7 @@ const getIconForStep = (step: string) => {
 };
 
 
-export function OutputCard({ isLoading, error, generatedEmail, onRetry }: OutputCardProps) {
+export function OutputCard({ isLoading, error, generatedEmail, onClear }: OutputCardProps) {
   const { toast } = useToast();
   const emailContentRef = useRef<HTMLDivElement>(null);
 
@@ -170,20 +168,6 @@ export function OutputCard({ isLoading, error, generatedEmail, onRetry }: Output
                       <Skeleton className="h-32 w-full" />
                   </div>
                 </div>
-            ) : error ? (
-                <div className="pt-6">
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Error</AlertTitle>
-                        <AlertDescription>
-                            {error || "An unknown error occurred. Please try again."}
-                        </AlertDescription>
-                    </Alert>
-                    <Button onClick={onRetry} className="mt-4 w-full">
-                        <RefreshCw className="mr-2 h-4 w-4" />
-                        Retry
-                    </Button>
-                </div>
             ) : generatedEmail ? (
                 <>
                     <div>
@@ -230,18 +214,22 @@ export function OutputCard({ isLoading, error, generatedEmail, onRetry }: Output
                 </>
             ) : (
                 <div className="flex flex-col items-center justify-center h-full pt-10">
-                    <p className="text-muted-foreground">Your generated email will appear here.</p>
+                    <p className="text-muted-foreground">{error ? '' : 'Your generated email will appear here.'}</p>
                 </div>
             )}
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-2 justify-end">
-            <Button variant="outline" onClick={handleShareWhatsApp} disabled={!generatedEmail}>
+            <Button variant="ghost" onClick={onClear} disabled={isLoading}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Clear
+            </Button>
+            <Button variant="outline" onClick={handleShareWhatsApp} disabled={!generatedEmail || isLoading}>
                 <WhatsAppIcon />
                 <span className="ml-2">Share</span>
             </Button>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button disabled={!generatedEmail}>
+                    <Button disabled={!generatedEmail || isLoading}>
                         <Download className="mr-2 h-4 w-4" />
                         Download
                     </Button>
