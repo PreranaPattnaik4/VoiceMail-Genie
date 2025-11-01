@@ -21,8 +21,6 @@ import {
   Languages,
   PenSquare,
   Settings,
-  Share2,
-  Download,
   Mic,
   Smile,
 } from 'lucide-react';
@@ -70,18 +68,6 @@ export function AppSidebar() {
                   <SidebarMenuButton tooltip="Voice Input">
                     <Mic />
                     <span>Voice Input</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Share via WhatsApp">
-                    <Share2 />
-                    <span>Share</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Download as .doc or .pdf">
-                    <Download />
-                    <span>Download</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
