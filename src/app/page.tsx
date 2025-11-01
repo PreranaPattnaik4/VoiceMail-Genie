@@ -45,7 +45,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen w-full flex-col items-center bg-background p-4 pt-10 gap-8">
+    <div className="flex min-h-screen w-full flex-col items-center bg-background p-4 pt-24 gap-8">
       <div className="w-full max-w-7xl mx-auto">
         <h1 className="font-headline text-4xl font-bold text-center mb-2">VoiceMail Genie</h1>
         <p className="text-muted-foreground text-center mb-8">State your goal in any language. Your Gemini-powered agent handles the rest.</p>
@@ -66,6 +66,6 @@ export default function Home() {
             onRetry={handleGenerate}
         />
       </div>
-    </main>
+    </div>
   );
 }
