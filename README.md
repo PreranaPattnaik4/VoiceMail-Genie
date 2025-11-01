@@ -1,5 +1,3 @@
-[Live Demo](https://voicemail-genie.onrender.com/)
-
 # VoiceMail Genie — The Multilingual Email Agent, Powered by Google Gemini
 
 **Tagline**: "State your goal in any language. Your Gemini-powered agent handles the rest."
